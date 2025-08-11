@@ -1,0 +1,15 @@
+@PACKAGE_INIT@
+
+get_filename_component(aardvark-i2c_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+find_dependency(ifx-error REQUIRED)
+find_dependency(timer REQUIRED)
+find_dependency(protocol REQUIRED)
+find_dependency(i2c REQUIRED)
+
+if(NOT TARGET ifx::aardvark-i2c)
+    include("${aardvark-i2c_CMAKE_DIR}/aardvark-i2c-targets.cmake")
+endif()
+
+check_required_components(aardvark-i2c)

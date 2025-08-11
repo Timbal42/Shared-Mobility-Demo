@@ -1,0 +1,15 @@
+@PACKAGE_INIT@
+
+get_filename_component(apduprotocol_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+find_dependency(ifx-error REQUIRED)
+find_dependency(logger REQUIRED)
+find_dependency(apdu REQUIRED)
+find_dependency(protocol REQUIRED)
+
+if(NOT TARGET ifx::apduprotocol)
+    include("${apduprotocol_CMAKE_DIR}/apduprotocol-targets.cmake")
+endif()
+
+check_required_components(apduprotocol)

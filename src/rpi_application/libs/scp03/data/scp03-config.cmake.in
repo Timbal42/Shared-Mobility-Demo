@@ -1,0 +1,16 @@
+@PACKAGE_INIT@
+
+get_filename_component(scp03_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+find_dependency(ifx-error REQUIRED)
+find_dependency(protocol REQUIRED)
+find_dependency(apdu REQUIRED)
+find_dependency(apduprotocol REQUIRED)
+find_dependency(aes REQUIRED)
+
+if(NOT TARGET ifx::scp03)
+    include("${scp03_CMAKE_DIR}/scp03-targets.cmake")
+endif()
+
+check_required_components(scp03)

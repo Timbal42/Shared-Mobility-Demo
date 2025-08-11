@@ -1,0 +1,15 @@
+@PACKAGE_INIT@
+
+get_filename_component(rpi-i2c_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+find_dependency(ifx-error REQUIRED)
+find_dependency(protocol REQUIRED)
+find_dependency(i2c REQUIRED)
+find_dependency(timer REQUIRED)
+
+if(NOT TARGET ifx::rpi-i2c)
+    include("${rpi-i2c_CMAKE_DIR}/rpi-i2c-targets.cmake")
+endif()
+
+check_required_components(rpi-i2c)

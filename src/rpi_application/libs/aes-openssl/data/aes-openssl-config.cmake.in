@@ -1,0 +1,14 @@
+@PACKAGE_INIT@
+
+get_filename_component(aes-openssl_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+find_dependency(ifx-error REQUIRED)
+find_dependency(aes REQUIRED)
+find_dependency(OpenSSL REQUIRED)
+
+if(NOT TARGET ifx::aes-openssl)
+    include("${aes-openssl_CMAKE_DIR}/aes-openssl-targets.cmake")
+endif()
+
+check_required_components(aes-openssl)

@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+get_filename_component(ifx-error_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+
+if(NOT TARGET ifx::ifx-error)
+    include("${ifx-error_CMAKE_DIR}/ifx-error-targets.cmake")
+endif()
+
+check_required_components(ifx-error)

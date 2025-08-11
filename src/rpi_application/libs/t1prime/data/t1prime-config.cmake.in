@@ -1,0 +1,22 @@
+@PACKAGE_INIT@
+
+get_filename_component(t1prime_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+find_dependency(ifx-error REQUIRED)
+find_dependency(protocol REQUIRED)
+find_dependency(crc REQUIRED)
+find_dependency(timer REQUIRED)
+
+if (${USE_I2C})
+  find_dependency(i2c REQUIRED)
+else()
+  find_dependency(spi REQUIRED)
+endif()
+
+
+if(NOT TARGET ifx::t1prime)
+    include("${t1prime_CMAKE_DIR}/t1prime-targets.cmake")
+endif()
+
+check_required_components(t1prime)

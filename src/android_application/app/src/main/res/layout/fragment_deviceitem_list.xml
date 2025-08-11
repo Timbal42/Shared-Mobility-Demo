@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:orientation="vertical" tools:context="com.infineon.blockchain.tutsplus.fragments.DeviceListFragment">
+
+    <ToggleButton
+        android:id="@+id/scan"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/scan"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#001C6E"
+        android:textOff="Scan"
+        android:textOn="Scanning..."
+        android:background="#69D2AA"
+        android:textSize="40dp" />
+
+    <ListView android:id="@android:id/list" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+</LinearLayout>

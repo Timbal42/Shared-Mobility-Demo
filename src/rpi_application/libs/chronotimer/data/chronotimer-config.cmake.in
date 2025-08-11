@@ -1,0 +1,13 @@
+@PACKAGE_INIT@
+
+get_filename_component(chronotimer_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+find_dependency(ifx-error REQUIRED)
+find_dependency(timer REQUIRED)
+
+if(NOT TARGET ifx::chronotimer)
+    include("${chronotimer_CMAKE_DIR}/chronotimer-targets.cmake")
+endif()
+
+check_required_components(chronotimer)

@@ -1,0 +1,15 @@
+@PACKAGE_INIT@
+
+get_filename_component(blocksec2go_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+find_package(ifx-error REQUIRED)
+find_package(apdu REQUIRED)
+find_package(protocol REQUIRED)
+find_package(apduprotocol REQUIRED)
+
+if(NOT TARGET ifx::blocksec2go)
+    include("${blocksec2go_CMAKE_DIR}/blocksec2go-targets.cmake")
+endif()
+
+check_required_components(blocksec2go)

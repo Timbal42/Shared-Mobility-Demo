@@ -1,0 +1,13 @@
+@PACKAGE_INIT@
+
+get_filename_component(aes_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+
+find_dependency(ifx-error REQUIRED)
+
+if(NOT TARGET ifx::aes)
+    include("${aes_CMAKE_DIR}/aes-targets.cmake")
+endif()
+
+check_required_components(aes)

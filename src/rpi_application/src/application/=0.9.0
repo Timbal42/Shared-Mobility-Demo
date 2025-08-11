@@ -1,0 +1,100 @@
+Looking in indexes: https://pypi.org/simple, https://www.piwheels.org/simple
+Collecting web3==7.12.0
+  Downloading web3-7.12.0-py3-none-any.whl (1.4 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 1.7 MB/s eta 0:00:00
+Collecting eth-account
+  Downloading eth_account-0.13.7-py3-none-any.whl (587 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 587.5/587.5 kB 2.1 MB/s eta 0:00:00
+Collecting eth-abi>=5.0.1
+  Downloading https://www.piwheels.org/simple/eth-abi/eth_abi-5.2.0-py3-none-any.whl (28 kB)
+Requirement already satisfied: eth-hash[pycryptodome]>=0.5.1 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from web3==7.12.0) (0.7.1)
+Collecting eth-typing>=5.0.0
+  Downloading eth_typing-5.2.1-py3-none-any.whl (19 kB)
+Collecting eth-utils>=5.0.0
+  Downloading eth_utils-5.3.0-py3-none-any.whl (102 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 102.5/102.5 kB 1.6 MB/s eta 0:00:00
+Collecting hexbytes>=1.2.0
+  Downloading hexbytes-1.3.1-py3-none-any.whl (5.1 kB)
+Requirement already satisfied: aiohttp>=3.7.4.post0 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from web3==7.12.0) (3.12.7)
+Requirement already satisfied: pydantic>=2.4.0 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from web3==7.12.0) (2.11.5)
+Requirement already satisfied: requests>=2.23.0 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from web3==7.12.0) (2.32.3)
+Requirement already satisfied: typing-extensions>=4.0.1 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from web3==7.12.0) (4.14.0)
+Requirement already satisfied: types-requests>=2.0.0 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from web3==7.12.0) (2.32.0.20250602)
+Collecting websockets<16.0.0,>=10.0.0
+  Downloading websockets-15.0.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (182 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 182.9/182.9 kB 638.3 kB/s eta 0:00:00
+Requirement already satisfied: pyunormalize>=15.0.0 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from web3==7.12.0) (16.0.0)
+Requirement already satisfied: bitarray>=2.4.0 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from eth-account) (2.9.3)
+Collecting eth-keyfile<0.9.0,>=0.7.0
+  Downloading https://www.piwheels.org/simple/eth-keyfile/eth_keyfile-0.8.1-py3-none-any.whl (7.5 kB)
+Collecting eth-keys>=0.4.0
+  Downloading eth_keys-0.7.0-py3-none-any.whl (20 kB)
+Collecting eth-rlp>=2.1.0
+  Downloading https://www.piwheels.org/simple/eth-rlp/eth_rlp-2.2.0-py3-none-any.whl (4.4 kB)
+Requirement already satisfied: rlp>=1.0.0 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from eth-account) (2.0.1)
+Requirement already satisfied: ckzg>=2.0.0 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from eth-account) (2.1.1)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from aiohttp>=3.7.4.post0->web3==7.12.0) (2.6.1)
+Requirement already satisfied: aiosignal>=1.1.2 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from aiohttp>=3.7.4.post0->web3==7.12.0) (1.3.2)
+Requirement already satisfied: attrs>=17.3.0 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from aiohttp>=3.7.4.post0->web3==7.12.0) (25.3.0)
+Requirement already satisfied: frozenlist>=1.1.1 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from aiohttp>=3.7.4.post0->web3==7.12.0) (1.6.0)
+Requirement already satisfied: multidict<7.0,>=4.5 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from aiohttp>=3.7.4.post0->web3==7.12.0) (6.4.4)
+Requirement already satisfied: propcache>=0.2.0 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from aiohttp>=3.7.4.post0->web3==7.12.0) (0.3.1)
+Requirement already satisfied: yarl<2.0,>=1.17.0 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from aiohttp>=3.7.4.post0->web3==7.12.0) (1.20.0)
+Collecting parsimonious<0.11.0,>=0.10.0
+  Downloading https://www.piwheels.org/simple/parsimonious/parsimonious-0.10.0-py3-none-any.whl (48 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 48.4/48.4 kB 640.6 kB/s eta 0:00:00
+Requirement already satisfied: pycryptodome<4,>=3.6.6 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from eth-hash[pycryptodome]>=0.5.1->web3==7.12.0) (3.23.0)
+Requirement already satisfied: cytoolz>=0.10.1 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from eth-utils>=5.0.0->web3==7.12.0) (0.12.3)
+Requirement already satisfied: annotated-types>=0.6.0 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from pydantic>=2.4.0->web3==7.12.0) (0.7.0)
+Requirement already satisfied: pydantic-core==2.33.2 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from pydantic>=2.4.0->web3==7.12.0) (2.33.2)
+Requirement already satisfied: typing-inspection>=0.4.0 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from pydantic>=2.4.0->web3==7.12.0) (0.4.1)
+Requirement already satisfied: charset-normalizer<4,>=2 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from requests>=2.23.0->web3==7.12.0) (3.4.2)
+Requirement already satisfied: idna<4,>=2.5 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from requests>=2.23.0->web3==7.12.0) (3.10)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from requests>=2.23.0->web3==7.12.0) (2.4.0)
+Requirement already satisfied: certifi>=2017.4.17 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from requests>=2.23.0->web3==7.12.0) (2025.4.26)
+Collecting rlp>=1.0.0
+  Downloading https://www.piwheels.org/simple/rlp/rlp-4.1.0-py3-none-any.whl (19 kB)
+Requirement already satisfied: toolz>=0.8.0 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from cytoolz>=0.10.1->eth-utils>=5.0.0->web3==7.12.0) (1.0.0)
+Requirement already satisfied: regex>=2022.3.15 in /home/Timotej/Desktop/demo_shared_mobility/venv/lib/python3.11/site-packages (from parsimonious<0.11.0,>=0.10.0->eth-abi>=5.0.1->web3==7.12.0) (2024.11.6)
+Installing collected packages: websockets, parsimonious, hexbytes, eth-typing, eth-utils, rlp, eth-keys, eth-abi, eth-rlp, eth-keyfile, eth-account, web3
+  Attempting uninstall: websockets
+    Found existing installation: websockets 9.1
+    Uninstalling websockets-9.1:
+      Successfully uninstalled websockets-9.1
+  Attempting uninstall: parsimonious
+    Found existing installation: parsimonious 0.8.1
+    Uninstalling parsimonious-0.8.1:
+      Successfully uninstalled parsimonious-0.8.1
+  Attempting uninstall: hexbytes
+    Found existing installation: hexbytes 0.3.1
+    Uninstalling hexbytes-0.3.1:
+      Successfully uninstalled hexbytes-0.3.1
+  Attempting uninstall: eth-typing
+    Found existing installation: eth-typing 2.3.0
+    Uninstalling eth-typing-2.3.0:
+      Successfully uninstalled eth-typing-2.3.0
+  Attempting uninstall: eth-utils
+    Found existing installation: eth-utils 1.9.5
+    Uninstalling eth-utils-1.9.5:
+      Successfully uninstalled eth-utils-1.9.5
+  Attempting uninstall: rlp
+    Found existing installation: rlp 2.0.1
+    Uninstalling rlp-2.0.1:
+      Successfully uninstalled rlp-2.0.1
+  Attempting uninstall: eth-keys
+    Found existing installation: eth-keys 0.3.4
+    Uninstalling eth-keys-0.3.4:
+      Successfully uninstalled eth-keys-0.3.4
+  Attempting uninstall: eth-abi
+    Found existing installation: eth-abi 2.2.0
+    Uninstalling eth-abi-2.2.0:
+      Successfully uninstalled eth-abi-2.2.0
+  Attempting uninstall: eth-rlp
+    Found existing installation: eth-rlp 0.2.1
+    Uninstalling eth-rlp-0.2.1:
+      Successfully uninstalled eth-rlp-0.2.1
+  Attempting uninstall: eth-keyfile
+    Found existing installation: eth-keyfile 0.5.1
+    Uninstalling eth-keyfile-0.5.1:
+      Successfully uninstalled eth-keyfile-0.5.1
+Successfully installed eth-abi-5.2.0 eth-account-0.13.7 eth-keyfile-0.8.1 eth-keys-0.7.0 eth-rlp-2.2.0 eth-typing-5.2.1 eth-utils-5.3.0 hexbytes-1.3.1 parsimonious-0.10.0 rlp-4.1.0 web3-7.12.0 websockets-15.0.1

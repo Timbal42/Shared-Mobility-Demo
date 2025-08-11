@@ -1,0 +1,406 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2020 Infineon Technologies AG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+/**
+ * \file scp03_crypto_tests.cpp
+ * \brief Tests for Global Platform SCP03 cryptography
+ */
+#include "catch2/catch.hpp"
+#include "ifx/scp03_crypto.h"
+
+TEST_CASE("Host Challenge: Every challenge is different")
+{
+    const size_t key_len = 32;
+    uint8_t key[key_len] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+                           0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+                           0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80,
+                           0x90, 0xA0, 0xB0, 0xC0, 0xD0, 0xE0, 0xF0, 0xFF };
+
+    uint8_t challenge1[SCP03_CHALLENGE_LEN];
+    uint8_t challenge2[SCP03_CHALLENGE_LEN];
+    uint8_t* challengeA = challenge1;
+    uint8_t* challengeB = challenge2;
+
+    scp03_generate_host_challenge(challengeB);
+
+    const size_t iterations = 0xFF;
+    for(size_t iteration = 0; iteration < iterations; iteration++)
+    {
+        // Switch challenges
+        uint8_t* temp_ptr = challengeA;
+        challengeA = challengeB;
+        challengeB = temp_ptr;
+
+        // Regenerate B
+        scp03_generate_host_challenge(challengeB);
+
+        // Compare
+        uint8_t different = 0;
+        for(size_t i = 0; i < SCP03_CHALLENGE_LEN; i++)
+        {
+            if(challengeA[i] != challengeB[i])
+            {
+                different = 1;
+                break;
+            }
+        }
+
+        REQUIRE(different);
+    }
+
+}
+
+TEST_CASE("Host Cryptogram")
+{
+    uint8_t host_challenge[SCP03_CHALLENGE_LEN] { 0x01, 0x02, 0x03, 0x04, 0x10, 0x20, 0x30, 0x40 };
+    uint8_t card_challenge[SCP03_CRYPTOGRAM_LEN] { 0x10, 0x20, 0x30, 0x40, 0x01, 0x02, 0x03, 0x04 };
+
+
+    uint8_t expected[SCP03_CRYPTOGRAM_LEN] { 0x02, 0xF1, 0xED, 0x3D, 0xD8, 0x01, 0xBE, 0x1D };
+
+    uint8_t host_cryptogram[SCP03_CRYPTOGRAM_LEN];
+    Scp03SessionKeys keys;
+    uint8_t mac_key[32] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+                          0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+                          0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80,
+                          0x90, 0xA0, 0xB0, 0xC0, 0xD0, 0xE0, 0xF0, 0xFF };
+    keys.mac = mac_key;
+    keys.mac_len = 32;
+
+    int status = scp03_generate_host_cryptogram(&keys, host_challenge, card_challenge, host_cryptogram);
+
+    REQUIRE(status == 0);
+
+    for(size_t i = 0; i < SCP03_CRYPTOGRAM_LEN; i++)
+        REQUIRE(expected[i] == host_cryptogram[i]);
+
+}
+
+TEST_CASE("Host Cryptogram 2")
+{
+    uint8_t host_challenge[SCP03_CHALLENGE_LEN] { 0x5C, 0x92, 0x37, 0xC2, 0xDE, 0xA0, 0x3C, 0x2E };
+    uint8_t card_challenge[SCP03_CRYPTOGRAM_LEN] { 0x14, 0x33, 0xEE, 0xFC, 0x0A, 0x45, 0x3C, 0x46 };
+
+
+    uint8_t expected[SCP03_CRYPTOGRAM_LEN] { 0x7b, 0x33, 0x41, 0x5a, 0x16, 0xe2, 0x9a, 0x3c };
+
+    uint8_t host_cryptogram[SCP03_CRYPTOGRAM_LEN];
+    Scp03SessionKeys keys;
+    uint8_t mac_key[32] { 0x28 ,0xbb ,0x19 ,0x1e ,0x5b ,0x1d ,0x51 ,0xd0 ,0x29, 0xdb ,0x73 ,0x2f ,0xf7 ,0xa7 ,0x29 ,0xd7 ,0xf7 ,0x4e ,0xb3 ,0xa2 ,0xea ,0x07 ,0xaf ,0x56 ,0xbf ,0x50 ,0xcd ,0x36 ,0x7a ,0x44 ,0x48 ,0x6a };
+    keys.mac = mac_key;
+    keys.mac_len = 32;
+
+    int status = scp03_generate_host_cryptogram(&keys, host_challenge, card_challenge, host_cryptogram);
+
+    REQUIRE(status == 0);
+
+    for(size_t i = 0; i < SCP03_CRYPTOGRAM_LEN; i++)
+        REQUIRE(expected[i] == host_cryptogram[i]);
+
+}
+
+TEST_CASE("derive")
+{
+    uint8_t context[16] { 0xff, 0x7f, 0x1f, 0xf5, 0xee, 0x51, 0xb3, 0x74,
+                          0x14, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01 };
+
+    uint8_t expected[32] { 0xae, 0xdd, 0x9c, 0x6d, 0x87, 0xfb, 0xc4, 0x67,
+                           0xbb, 0xb2, 0xc7, 0xb0, 0x33, 0xe5, 0xbf, 0x64,
+                           0xde, 0x44, 0xe0, 0x9d, 0x37, 0xff, 0x08, 0x84,
+                           0x0a, 0xea, 0xac, 0x5d, 0x8f, 0x6f, 0xd7, 0xa9 };
+
+    Scp03SessionKeys keys;
+    uint8_t mac_key[32] { 0x6f, 0xb1, 0x65, 0x0c, 0x7e, 0xfb, 0xfa, 0xb6,
+                          0xa3, 0xdd, 0x3b, 0xde, 0xf9, 0xd0, 0x11, 0x34,
+                          0xde, 0x8a, 0x62, 0x8e, 0xde, 0x73, 0x83, 0x45,
+                          0x0c, 0xa7, 0x71, 0xd4, 0xa2, 0x1f, 0x9c, 0xb2 };
+    keys.mac = mac_key;
+    keys.mac_len = 32;
+
+    uint8_t result[32];
+
+    int status = scp03_derive(mac_key, 0xf0, context, result, 32);
+
+    REQUIRE(status == 0);
+
+    for(size_t i = 0; i < 32; i++)
+        REQUIRE(expected[i] == result[i]);
+
+}
+
+TEST_CASE("Card Cryptogram")
+{
+    // TODO: Data taken from implementation
+    uint8_t host_challenge[SCP03_CHALLENGE_LEN] { 0x01, 0x02, 0x03, 0x04, 0x10, 0x20, 0x30, 0x40 };
+    uint8_t card_challenge[SCP03_CHALLENGE_LEN] { 0x10, 0x20, 0x30, 0x40, 0x01, 0x02, 0x03, 0x04 };
+
+    uint8_t expected[SCP03_CRYPTOGRAM_LEN] { 0x01, 0x5E, 0xD3, 0x99, 0x56, 0x54, 0x64, 0x42 };
+
+    uint8_t card_cryptogram[SCP03_CRYPTOGRAM_LEN];
+    Scp03SessionKeys keys;
+    uint8_t mac_key[32] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+                          0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+                          0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80,
+                          0x90, 0xA0, 0xB0, 0xC0, 0xD0, 0xE0, 0xF0, 0xFF };
+    keys.mac = mac_key;
+    keys.mac_len = 32;
+
+    int status = scp03_generate_card_cryptogram(&keys, host_challenge, card_challenge, card_cryptogram);
+
+    REQUIRE(status == 0);
+
+    for(size_t i = 0; i < SCP03_CRYPTOGRAM_LEN; i++)
+        REQUIRE(expected[i] == card_cryptogram[i]);
+
+}
+
+TEST_CASE("APDU CMAC")
+{
+    Scp03SessionKeys keys;
+    uint8_t mac_key[32] { 0x28 ,0xbb ,0x19 ,0x1e ,0x5b ,0x1d ,0x51 ,0xd0 ,0x29, 0xdb ,0x73 ,0x2f ,0xf7 ,0xa7 ,0x29 ,0xd7 ,0xf7 ,0x4e ,0xb3 ,0xa2 ,0xea ,0x07 ,0xaf ,0x56 ,0xbf ,0x50 ,0xcd ,0x36 ,0x7a ,0x44 ,0x48 ,0x6a };
+    keys.mac = mac_key;
+    keys.mac_len = 32;
+
+
+    APDU request;
+    request.cla = 0xa0;
+    request.ins = 0xCA;
+    request.p1 = 0x00;
+    request.p2 = 0x05;
+    request.lc = 0x08;
+    request.data = new uint8_t[8] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
+    request.le = 0x00;
+
+    APDU wrapped;
+
+    uint8_t cmac_chaining[16] = { 0 };
+    uint8_t cmac_chaining1[16];
+    uint8_t cmac_chaining2[16];
+    uint8_t cmac_chaining3[16];
+    scp03_wrap(&keys, cmac_chaining, &request, &wrapped, cmac_chaining1);
+
+    uint8_t mac0[8] { 0x82 ,0xe4 ,0x6a ,0x3f ,0x95 ,0x83 ,0xe7 ,0x06 };
+
+    for(size_t i = 0; i < (wrapped.lc - request.lc); i++)
+        REQUIRE(wrapped.data[request.lc + i] == mac0[i]);
+    free(wrapped.data);
+
+    scp03_wrap(&keys, cmac_chaining1, &request, &wrapped, cmac_chaining2);
+
+    uint8_t mac1[8] { 0x57 ,0x7e ,0x87 ,0xcf ,0x22 ,0x3e ,0x65 ,0xde };
+
+    for(size_t i = 0; i < (wrapped.lc - request.lc); i++)
+        REQUIRE(wrapped.data[request.lc + i] == mac1[i]);
+    free(wrapped.data);
+
+    scp03_wrap(&keys, cmac_chaining2, &request, &wrapped, cmac_chaining3);
+
+    uint8_t mac2[8] { 0xa1 ,0x74 ,0x47 ,0x02 ,0x0b ,0xae ,0x1c ,0x45 };
+
+    for(size_t i = 0; i < (wrapped.lc - request.lc); i++)
+        REQUIRE(wrapped.data[request.lc + i] == mac2[i]);
+}
+
+TEST_CASE("Response Decryption/RMAC")
+{
+    uint8_t cmac_chaining[16] {
+        0x9C, 0xF5, 0xB1, 0xED, 0x53, 0x2F, 0x93, 0x46,
+        0x60, 0x1A, 0x1F, 0x53, 0x10, 0x0C, 0x19, 0x6D };
+    Scp03SessionKeys keys;
+    uint8_t rmac_key[32] {
+        0xF4, 0x2C, 0x85, 0x54, 0xDF, 0xB8, 0x5A, 0xA1,
+        0x09, 0xC2, 0x4C, 0x9D, 0xA1, 0xE2, 0xD9, 0x57,
+        0xCE, 0x6D, 0x66, 0x91, 0x54, 0x52, 0xE8, 0x05,
+        0x5B, 0x10, 0x44, 0x6A, 0x64, 0xB9, 0x04, 0x8C };
+    keys.rmac = rmac_key;
+    keys.rmac_len = 32;
+
+    // encrypted APDU with CMAC
+    APDU request;
+    request.cla = 0xA4;
+    request.ins = 0xAE;
+    request.p1 = 0x00;
+    request.p2 = 0x01;
+    request.lc = 0x38;
+    request.data = new uint8_t[0x38] {
+        0xEB, 0x7B, 0x2B, 0x5B, 0x21, 0xF5, 0x0A, 0x90,
+        0x3F, 0x38, 0x45, 0x01, 0x84, 0xF1, 0x6B, 0xB5,
+        0x13, 0xA2, 0x53, 0xC6, 0x30, 0x99, 0x3B, 0xC2,
+        0x46, 0xD9, 0xD0, 0xC6, 0x7B, 0x43, 0xB8, 0xBD,
+        0x20, 0x2E, 0x2F, 0xAF, 0x61, 0xB5, 0xE5, 0x8B,
+        0xF4, 0x8C, 0x26, 0x05, 0xEF, 0x19, 0x15, 0xAF,
+        0x9C, 0xF5, 0xB1, 0xED, 0x53, 0x2F, 0x93, 0x46 };
+    request.le = 0x00;
+
+    APDUResponse encrypted_wrapped;
+    encrypted_wrapped.sw = 0x9000;
+    encrypted_wrapped.len = 8;
+    encrypted_wrapped.data = new uint8_t[8] { 0x8B, 0x20, 0xD2, 0xAD, 0xED, 0xBA, 0x19, 0xCB };
+
+    APDUResponse encrypted;
+    int status = scp03_unwrap(&keys, cmac_chaining, &encrypted_wrapped, &encrypted);
+    REQUIRE(status == 0);
+}
+
+TEST_CASE("Command Encryption icv = 1")
+{
+    uint8_t enc_key[32] { 0xd9 ,0x8d ,0x40 ,0x18 ,0xfd ,0x28 ,0x8b ,0x20,
+                          0xa7 ,0x7d ,0x69 ,0xe0 ,0x5b ,0x55 ,0x97 ,0xad,
+                          0x53 ,0xd4 ,0x92 ,0x3d ,0x68 ,0x21 ,0xc7 ,0x15,
+                          0xcc ,0x2c ,0x56 ,0x5b ,0x63 ,0x3f ,0xf1 ,0xde };
+    Scp03SessionKeys keys;
+    keys.enc = enc_key;
+    keys.enc_len = 32;
+
+    uint8_t data[13] { 0xa4, 0xca, 0x00, 0x05, 0x10, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
+    APDU command = {
+        0x00, 0x00, 0x00, 0x00, 13, data, 0x00
+    };
+
+    std::vector<uint8_t> expected { 0x94 ,0x06 ,0x56 ,0x2b ,0x65 ,0xd7 ,0x53 ,0xbb ,0xe2 ,0x3f ,0xc4 ,0x17 ,0x72 ,0xc4 ,0x60 ,0xb3 };
+
+    APDU result;
+    scp03_encrypt(&keys, 1, &command, &result);
+    std::vector<uint8_t> result_vector(result.data, result.data + result.lc);
+
+    REQUIRE(expected == result_vector);
+}
+
+TEST_CASE("Command Encryption icv = 2")
+{
+    uint8_t enc_key[32] { 0xd9 ,0x8d ,0x40 ,0x18 ,0xfd ,0x28 ,0x8b ,0x20,
+                          0xa7 ,0x7d ,0x69 ,0xe0 ,0x5b ,0x55 ,0x97 ,0xad,
+                          0x53 ,0xd4 ,0x92 ,0x3d ,0x68 ,0x21 ,0xc7 ,0x15,
+                          0xcc ,0x2c ,0x56 ,0x5b ,0x63 ,0x3f ,0xf1 ,0xde };
+    Scp03SessionKeys keys;
+    keys.enc = enc_key;
+    keys.enc_len = 32;
+
+    uint8_t data[13] { 0xa4, 0xca, 0x00, 0x05, 0x10, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
+    APDU command = {
+        0x00, 0x00, 0x00, 0x00, 13, data, 0x00
+    };
+
+    std::vector<uint8_t> expected { 0x8c ,0xa4 ,0x53 ,0x99 ,0x05 ,0xc1 ,0xd2 ,0xe8 ,0xfd ,0xce ,0x2f ,0xd0 ,0xab ,0xac ,0xfe ,0xdb };
+
+    APDU result;
+    scp03_encrypt(&keys, 2, &command, &result);
+    std::vector<uint8_t> result_vector(result.data, result.data + result.lc);
+
+    REQUIRE(expected == result_vector);
+}
+
+TEST_CASE("Command Encryption icv = 3")
+{
+    uint8_t enc_key[32] { 0xd9 ,0x8d ,0x40 ,0x18 ,0xfd ,0x28 ,0x8b ,0x20,
+                          0xa7 ,0x7d ,0x69 ,0xe0 ,0x5b ,0x55 ,0x97 ,0xad,
+                          0x53 ,0xd4 ,0x92 ,0x3d ,0x68 ,0x21 ,0xc7 ,0x15,
+                          0xcc ,0x2c ,0x56 ,0x5b ,0x63 ,0x3f ,0xf1 ,0xde };
+    Scp03SessionKeys keys;
+    keys.enc = enc_key;
+    keys.enc_len = 32;
+
+    uint8_t data[13] { 0xa4, 0xca, 0x00, 0x05, 0x10, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
+    APDU command = {
+        0x00, 0x00, 0x00, 0x00, 13, data, 0x00
+    };
+
+    std::vector<uint8_t> expected { 0x0f ,0x22 ,0x71 ,0xe3 ,0x86 ,0xff ,0xc9 ,0x18 ,0x23 ,0x68 ,0xa5 ,0x94 ,0xef ,0x5a ,0x7b ,0x15 };
+
+    APDU result;
+    scp03_encrypt(&keys, 3, &command, &result);
+    std::vector<uint8_t> result_vector(result.data, result.data + result.lc);
+
+    REQUIRE(expected == result_vector);
+}
+
+TEST_CASE("APDU Encryption")
+{
+    APDU request {
+        /* CLA  */ 0xA0,
+        /* INS  */ 0xF7,
+        /* P1   */ 0x00,
+        /* P2   */ 0x00,
+        /* Lc   */ 3,
+        /* data */ new uint8_t[3] { 0x01, 0x02, 0x03 },
+        /* Le   */ 5
+    };
+
+    uint8_t mac_key[32] { 0x28 ,0xbb ,0x19 ,0x1e ,0x5b ,0x1d ,0x51 ,0xd0,
+                          0x29, 0xdb ,0x73 ,0x2f ,0xf7 ,0xa7 ,0x29 ,0xd7,
+                          0xf7 ,0x4e ,0xb3 ,0xa2 ,0xea ,0x07 ,0xaf ,0x56,
+                          0xbf ,0x50 ,0xcd ,0x36 ,0x7a ,0x44 ,0x48 ,0x6a };
+
+    uint8_t enc_key[32] { 0xd9 ,0x8d ,0x40 ,0x18 ,0xfd ,0x28 ,0x8b ,0x20,
+                          0xa7 ,0x7d ,0x69 ,0xe0 ,0x5b ,0x55 ,0x97 ,0xad,
+                          0x53 ,0xd4 ,0x92 ,0x3d ,0x68 ,0x21 ,0xc7 ,0x15,
+                          0xcc ,0x2c ,0x56 ,0x5b ,0x63 ,0x3f ,0xf1 ,0xde };
+    Scp03SessionKeys keys;
+    keys.mac = mac_key;
+    keys.mac_len = 32;
+    keys.enc = enc_key;
+    keys.enc_len = 32;
+
+    APDU expected {
+        /* CLA  */ 0xA4,
+        /* INS  */ 0xF7,
+        /* P1   */ 0x00,
+        /* P2   */ 0x00,
+        /* Lc   */ 24,
+        /* data */ new uint8_t[24]
+            { 0x04, 0x91, 0xa5, 0x7b, 0xc3, 0x2c, 0x72, 0xfa,
+              0x7e, 0x4a, 0x05, 0xd8, 0x7d, 0x40, 0x67, 0x71,
+              0xbc, 0x03, 0x62, 0x61, 0xe7, 0x66, 0x7e, 0xc3 },
+        /* Le   */ 5
+    };
+    std::vector<uint8_t> expected_data(expected.data, expected.data + expected.lc);
+    std::vector<uint8_t> expected_data_without_cmac(expected.data, expected.data + expected.lc - 8);
+
+    APDU encrypted;
+    scp03_encrypt(&keys, 1, &request, &encrypted);
+    std::vector<uint8_t> encrypted_data(encrypted.data, encrypted.data + encrypted.lc);
+
+    // REQUIRE(expected.cla == encrypted.cla);
+    REQUIRE(expected.ins == encrypted.ins);
+    REQUIRE(expected.p1 == encrypted.p1);
+    REQUIRE(expected.p2 == encrypted.p2);
+    REQUIRE(expected.lc - 8 == encrypted.lc);
+    REQUIRE(expected_data_without_cmac == encrypted_data);
+    REQUIRE(expected.le == encrypted.le);
+
+    uint8_t cmac_chaining[16] { 0 };
+    uint8_t next_cmac_chaining[16] { 0 };
+
+    APDU encrypted_cmacd;
+    scp03_wrap(&keys, cmac_chaining, &encrypted, &encrypted_cmacd, next_cmac_chaining);
+    std::vector<uint8_t> encrypted_cmacd_data(encrypted_cmacd.data, encrypted_cmacd.data + encrypted_cmacd.lc);
+
+    REQUIRE(expected.cla == encrypted_cmacd.cla);
+    REQUIRE(expected.ins == encrypted_cmacd.ins);
+    REQUIRE(expected.p1 == encrypted_cmacd.p1);
+    REQUIRE(expected.p2 == encrypted_cmacd.p2);
+    REQUIRE(expected.lc == encrypted_cmacd.lc);
+    REQUIRE(expected_data == encrypted_cmacd_data);
+    REQUIRE(expected.le == encrypted_cmacd.le);
+}

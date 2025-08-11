@@ -1,0 +1,13 @@
+@PACKAGE_INIT@
+
+get_filename_component(console-logger_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+find_dependency(ifx-error REQUIRED)
+find_dependency(logger REQUIRED)
+
+if(NOT TARGET ifx::console-logger)
+    include("${console-logger_CMAKE_DIR}/console-logger-targets.cmake")
+endif()
+
+check_required_components(console-logger)

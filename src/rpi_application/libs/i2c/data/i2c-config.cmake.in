@@ -1,0 +1,13 @@
+@PACKAGE_INIT@
+
+get_filename_component(i2c_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+include(CMakeFindDependencyMacro)
+find_dependency(ifx-error REQUIRED)
+find_dependency(protocol REQUIRED)
+
+if(NOT TARGET ifx::i2c)
+    include("${i2c_CMAKE_DIR}/i2c-targets.cmake")
+endif()
+
+check_required_components(i2c)
